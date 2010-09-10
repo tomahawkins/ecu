@@ -1,0 +1,11 @@
+Tools for Automotive ECU Development
+
+tovcd               -  Converts several CAN formats to VCD.
+todbc               -  Generate Vector DBC files from CAN specification.
+probe               -  Extracts configuration and probed signals from ECU.
+canview             -  View CAN traffic.
+cansend             -  Send CAN message.
+vcdgrep             -  Search VCD files for signal patterns and assertion violations.
+brakedancer-layout  -  Generate a brakedancer signal layout from a VCD file.
+
+
