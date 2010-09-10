@@ -8,4 +8,6 @@ cansend             -  Send CAN message.
 vcdgrep             -  Search VCD files for signal patterns and assertion violations.
 brakedancer-layout  -  Generate a brakedancer signal layout from a VCD file.
 
+http://hackage.haskell.org/package/ecu
+
 
