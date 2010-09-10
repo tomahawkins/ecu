@@ -1,14 +1,14 @@
 name:    ecu
-version: 0.0.0
+version: 0.0.1
 
 category: Utils
 
 synopsis: Tools for automotive ECU development.
 
 description:
-  These are a collection of tools developed and used by Eaton's
+  This is a collection of tools developed and used by Eaton's
   electro-hydraulic software engineers.  Most tools is this 
-  collection and for interacting with, and analyzing vehicle
+  collection are for interacting with, and analyzing vehicle
   ECU data via a CAN bus.
 
   These tools require the Kvaser canlib library: http://www.kvaser.com/
