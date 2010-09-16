@@ -1,12 +1,19 @@
 Tools for Automotive ECU Development
 
-tovcd               -  Converts several CAN formats to VCD.
-todbc               -  Generate Vector DBC files from CAN specification.
-probe               -  Extracts configuration and probed signals from ECU.
-canview             -  View CAN traffic.
-cansend             -  Send CAN message.
+tovcd    -  Converts several CAN formats to VCD.
+todbc    -  Generate Vector DBC files from CAN specification.
+probe    -  Extracts configuration and probed signals from ECU.
+canview  -  View CAN traffic.
+cansend  -  Send CAN message.
+git2cc   -  Bridge Git repositories to ClearCase.
+commit   -  Git commits with ClearQuest activity annotations.
+
+Future Tools:
+
+toesb               -  Converts s-record ECU images to the Eaton Standard Binary format.
 vcdgrep             -  Search VCD files for signal patterns and assertion violations.
 brakedancer-layout  -  Generate a brakedancer signal layout from a VCD file.
+ecush               -  ECU development shell.
 
 http://hackage.haskell.org/package/ecu
 
