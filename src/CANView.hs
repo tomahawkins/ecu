@@ -1,5 +1,7 @@
 module Main (main) where
 
+import Control.Monad
+import Data.Word
 import System.Environment
 import Text.Printf
 
@@ -9,26 +11,27 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
-    ["--std"] -> do
+    ["-h"] -> help
+    ["--help"] -> help
+    "--std" : ids -> do
       initCAN
       bus <- openBus 0 Standard
       flushRxQueue bus
-      canview bus
-    [] -> do
+      canview bus $ map read ids
+    ids -> do
       initCAN
       bus <- openBus 0 Extended
       flushRxQueue bus
-      canview bus
-    _ -> help
+      canview bus $ map read ids
 
-canview :: Bus -> IO ()
-canview bus = do
+canview :: Bus -> [Word32] -> IO ()
+canview bus ids = do
   m <- recvMsg bus
   case m of
-    Nothing -> canview bus
-    Just (t, m) -> do
-      putStrLn $ printf "%10i   " t ++ show m
-      canview bus
+    Nothing -> canview bus ids
+    Just (t, m@(Msg id _)) -> do
+      when (null ids || elem id ids) $ putStrLn $ printf "%10i   " t ++ show m
+      canview bus ids
 
 help :: IO ()
 help = putStrLn $ unlines
@@ -37,10 +40,12 @@ help = putStrLn $ unlines
   , "  canview - listens to a CAN bus"
   , ""
   , "SYNOPSIS"
-  , "  canview {argument}"
+  , "  canview [ --std ] { <id-filter> }"
   , ""
   , "ARGUMENTS"
   , "  --std          Set to standard CAN with 500K.  Default is extended CAN with 250K."
+  , ""
+  , "  <id-filter>    If id filters are included, only matching ids will be displayed." 
   , ""
   ]
 
