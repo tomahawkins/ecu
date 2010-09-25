@@ -164,7 +164,7 @@ startProbes bus file = do
   loop vcd sample lastTime = do
     m <- recvMsgWait bus 1000
     case m of
-      Just (time, Msg id payload) | id .&. 0x180200EF == 0x180200EF -> do
+      Just (time, Msg id payload) | id .&. 0xFFFF00FF == 0x180200EF -> do
         --printf "%-20d %-20d\n" time (time - lastTime)
         --hFlush stdout
         sample (fromIntegral $ shiftR id 8 .&. 0xFF) $ fromPayload payload
