@@ -1,7 +1,7 @@
 name:    ecu
-version: 0.0.1
+version: 0.0.2
 
-category: Utils
+category: Embedded, Utils
 
 synopsis: Tools for automotive ECU development.
 
@@ -28,7 +28,7 @@ extra-source-files:
 executable tovcd
   hs-source-dirs:    src
   main-is:           ToVCD.hs
-  build-depends:     base       >= 4.2     && < 5,
+  build-depends:     base       >= 4.0     && < 5,
                      bytestring >= 0.9.1   && < 0.9.2,
                      vcd        >= 0.1.4   && < 2
   ghc-options:       -W
@@ -39,7 +39,7 @@ executable cansend
   other-modules:     CAN
   c-sources:         src/kvaser.c
   extra-libraries:   canlib
-  build-depends:     base       >= 4.2     && < 5
+  build-depends:     base       >= 4.0     && < 5
   ghc-options:       -W
   extensions:        ForeignFunctionInterface
 
@@ -49,7 +49,17 @@ executable canview
   other-modules:     CAN
   c-sources:         src/kvaser.c
   extra-libraries:   canlib
-  build-depends:     base       >= 4.2     && < 5
+  build-depends:     base       >= 4.0     && < 5
+  ghc-options:       -W
+  extensions:        ForeignFunctionInterface
+
+executable ccp
+  hs-source-dirs:    src
+  main-is:           CCP.hs
+  other-modules:     CAN
+  c-sources:         src/kvaser.c
+  extra-libraries:   canlib
+  build-depends:     base       >= 4.0     && < 5
   ghc-options:       -W
   extensions:        ForeignFunctionInterface
 
@@ -59,7 +69,7 @@ executable probe
   other-modules:     CAN
   c-sources:         src/kvaser.c
   extra-libraries:   canlib
-  build-depends:     base       >= 4.2     && < 5,
+  build-depends:     base       >= 4.0     && < 5,
                      digest     >= 0.0.0.8 && < 0.0.1,
                      vcd        >= 0.1.4   && < 2
   ghc-options:       -W
@@ -68,7 +78,7 @@ executable probe
 executable toesb
   hs-source-dirs:    src
   main-is:           ToESB.hs
-  build-depends:     base       >= 4.2     && < 5,
+  build-depends:     base       >= 4.0     && < 5,
                      bytestring >= 0.9.1   && < 0.9.2,
                      digest     >= 0.0.0.8 && < 0.0.1
   ghc-options:       -W
@@ -76,13 +86,13 @@ executable toesb
 executable commit
   hs-source-dirs:    src
   main-is:           Commit.hs
-  build-depends:     base       >= 4.2     && < 5
+  build-depends:     base       >= 4.0     && < 5
   ghc-options:       -W
 
 executable git2cc
   hs-source-dirs:    src
   main-is:           Git2CC.hs
-  build-depends:     base       >= 4.2     && < 5,
+  build-depends:     base       >= 4.0     && < 5,
                      directory  >= 1.0.1   && < 1.1,
                      process    >= 1.0.1   && < 1.1
   ghc-options:       -W
