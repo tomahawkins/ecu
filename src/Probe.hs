@@ -190,37 +190,37 @@ sampleProbes vcd packedProbes = f1 0 packedProbes
     f2 bit ((name, typ) : probes) = do
       a <- case typ of
         Bool   -> do
-          f <- var vcd name False
+          f <- var vcd [name] False
           return $ \ a -> f $ testBit a (bit - 1)
         Int8   -> do
-          f <- var vcd name (0 :: Int8  )
+          f <- var vcd [name] (0 :: Int8  )
           return $ \ a -> f $ fromIntegral $ shiftR a $ bit -  8
         Int16  -> do
-          f <- var vcd name (0 :: Int16 )
+          f <- var vcd [name] (0 :: Int16 )
           return $ \ a -> f $ fromIntegral $ shiftR a $ bit - 16
         Int32  -> do
-          f <- var vcd name (0 :: Int32 )
+          f <- var vcd [name] (0 :: Int32 )
           return $ \ a -> f $ fromIntegral $ shiftR a $ bit - 32
         Int64  -> do
-          f <- var vcd name (0 :: Int64 )
+          f <- var vcd [name] (0 :: Int64 )
           return $ \ a -> f $ fromIntegral $ shiftR a $ bit - 64
         Word8  -> do
-          f <- var vcd name (0 :: Word8 )
+          f <- var vcd [name] (0 :: Word8 )
           return $ \ a -> f $ fromIntegral $ shiftR a $ bit -  8
         Word16 -> do
-          f <- var vcd name (0 :: Word16)
+          f <- var vcd [name] (0 :: Word16)
           return $ \ a -> f $ fromIntegral $ shiftR a $ bit - 16
         Word32 -> do
-          f <- var vcd name (0 :: Word32)
+          f <- var vcd [name] (0 :: Word32)
           return $ \ a -> f $ fromIntegral $ shiftR a $ bit - 32
         Word64 -> do
-          f <- var vcd name (0 :: Word64)
+          f <- var vcd [name] (0 :: Word64)
           return $ \ a -> f $ fromIntegral $ shiftR a $ bit - 64
         Float  -> do
-          f <- var vcd name (0 :: Float )
+          f <- var vcd [name] (0 :: Float )
           return $ \ a -> f $ toFloat (fromIntegral $ shiftR a $ bit - 32 :: Word32)
         Double -> do
-          f <- var vcd name (0 :: Double)
+          f <- var vcd [name] (0 :: Double)
           return $ \ a -> f $ toDouble (fromIntegral $ shiftR a $ bit - 64 :: Word64)
       b <- f2 (bit - width typ) probes
       return $ \ p -> a p >> b p

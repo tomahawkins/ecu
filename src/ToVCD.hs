@@ -59,10 +59,10 @@ sampleMsg vcd (Msg id fields) = do
 sampleField :: VCDHandle -> Field -> IO (Word64 -> IO ())
 sampleField vcd field = case field of
   Bool name bit -> do
-    v <- var vcd name False
+    v <- var vcd [name] False
     return $ \ payload -> v $ testBit payload $ 64 - bit
   Float name bit width gain bias -> do
-    v <- var vcd name (0 :: Float)
+    v <- var vcd [name] (0 :: Float)
     return $ \ payload -> v $ fromIntegral (shiftR payload (71 - width - bit) .&. mask width) * gain + bias
   where
   mask :: Int -> Word64
