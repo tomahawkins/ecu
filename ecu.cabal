@@ -1,5 +1,5 @@
 name:    ecu
-version: 0.0.2
+version: 0.0.3
 
 category: Embedded, Utils
 
@@ -61,7 +61,7 @@ executable ccp
   extra-libraries:   canlib
   build-depends:     base       >= 4.0     && < 5
   ghc-options:       -W
-  extensions:        ForeignFunctionInterface
+  extensions:        ForeignFunctionInterface, FlexibleInstances
 
 executable probe
   hs-source-dirs:    src
