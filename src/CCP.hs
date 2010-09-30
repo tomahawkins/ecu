@@ -19,7 +19,7 @@ help = putStrLn $ unlines
   , "  ccp command { option } { argument }"
   , ""
   , "COMMANDS"
-  , "  download address data    Download data to ECU.  Data must be even number of hex charaters."
+  , "  download address data    Download data to ECU.  Data must be even number of hex characters."
   , "  upload   address         Upload 4 bytes from the ECU."
   , "  upload   address size    Upload a memory region from the ECU."
   , ""
