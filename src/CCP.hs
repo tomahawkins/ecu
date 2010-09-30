@@ -19,11 +19,12 @@ help = putStrLn $ unlines
   , "  ccp command { option } { argument }"
   , ""
   , "COMMANDS"
-  , "  upload address           Upload 4 bytes from the ECU."
-  , "  upload address length    Upload a memory region from the ECU."
+  , "  download address data    Download data to ECU.  Data must be even number of hex charaters."
+  , "  upload   address         Upload 4 bytes from the ECU."
+  , "  upload   address size    Upload a memory region from the ECU."
   , ""
   , "OPTIONS"
-  , "  -v  Verbose.  Show message transactions."
+  , "  -v    Print message transactions and diagnostic messages."
   , ""
   , "ENVIRONMENT VARIABLES"
   , "  CCP_ID_MASTER    CAN identifier for master device (this configuration tool)."
@@ -37,6 +38,16 @@ main = getArgs >>= f
   f args = case args of
     ["-h"] -> help
     ["--help"] -> help
+    ["download", addr, bytes] -> do
+      bytes <- parseBytes bytes
+      connection <- connect False
+      download connection (read addr) bytes
+      disconnect connection
+    ["download", "-v", addr, bytes] -> do
+      bytes <- parseBytes bytes
+      connection <- connect True
+      download connection (read addr) bytes
+      disconnect connection
     ["upload", "-v", addr] -> f ["upload", "-v", addr, "4"]
     ["upload", "-v", addr, size] -> do
       connection <- connect True
@@ -111,7 +122,11 @@ transactRetry n c cmd payload
   | otherwise = do
       a <- transact c cmd payload
       case a of
-        Nothing -> transactRetry (n - 1) c cmd payload
+        Nothing -> do
+          when (cVerbose c) $ do
+            putStrLn "retrying transaction"
+            hFlush stdout
+          transactRetry (n - 1) c cmd payload
         Just a  -> return a
 
 setMTA0 :: Connection -> Word32 -> IO ()
@@ -157,4 +172,34 @@ upload c address size = do
   pack [] = []
   pack a = [concat a]
        
+parseBytes :: String -> IO [Word8]
+parseBytes a = if odd $ length a then error "hex string has odd number of characters, not byte aligned" else return $ parseBytes' a
+  where
+  parseBytes' :: String -> [Word8]
+  parseBytes' ('0' : 'x' : bytes) = parseBytes' bytes
+  parseBytes' [] = []
+  parseBytes' [_] = error "hex string has odd number of characters, not byte aligned"
+  parseBytes' (a : b : c) = read ("0x" ++ [a, b]) : parseBytes' c
+
+
+download :: Connection -> Word32 -> [Word8] -> IO ()
+download c address bytes = download0 address bytes
+  where
+  download0 :: Word32 -> [Word8] -> IO ()
+  download0 address bytes = do
+    setMTA0 c address
+    download1 address bytes
+
+  download1 :: Word32 -> [Word8] -> IO ()
+  download1 address bytes = if null bytes then return () else do
+    a <- transact c (if n == 6 then 0x23 else 0x03) (if n == 6 then take 6 bytes else fromIntegral n : take n (bytes ++ [0xFF ..]))
+    case a of
+      Nothing -> do
+        when (cVerbose c) $ do
+          printf "download restart at address %08x\n" address
+          hFlush stdout
+        download0 address bytes
+      Just _ -> download1 (address + fromIntegral n) (drop n bytes)
+    where
+    n = min 6 $ length bytes
 
