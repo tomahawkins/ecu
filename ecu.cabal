@@ -1,17 +1,17 @@
 name:    ecu
-version: 0.0.4
+version: 0.0.5
 
 category: Embedded, Utils
 
 synopsis: Tools for automotive ECU development.
 
 description:
-  This is a collection of tools developed and used by Eaton's
-  electro-hydraulic software engineers.  Most tools is this 
-  collection are for interacting with, and analyzing vehicle
-  ECU data via a CAN bus.
+  A collection of tools developed and used by Eaton's
+  electro-hydraulic software engineers.  Most of these tools
+  are for interacting with vehicle electronic
+  control units (ECUs) via a CAN bus.
 
-  These tools require the Kvaser canlib library: http://www.kvaser.com/
+  This package requires the Kvaser canlib library: http://www.kvaser.com/
 
 author:     Tom Hawkins <tomahawkins@gmail.com>
 maintainer: Tom Hawkins <tomahawkins@gmail.com>
@@ -96,10 +96,6 @@ executable git2cc
                      directory  >= 1.0     && < 1.1,
                      process    >= 1.0.1   && < 1.1
   ghc-options:       -W
-
-source-repository head
-    type:     git
-    location: git://github.com/tomahawkins/ecu.git
 
 source-repository head
     type:     git
