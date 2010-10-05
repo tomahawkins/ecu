@@ -1,5 +1,5 @@
 name:    ecu
-version: 0.0.3
+version: 0.0.4
 
 category: Embedded, Utils
 
@@ -93,7 +93,7 @@ executable git2cc
   hs-source-dirs:    src
   main-is:           Git2CC.hs
   build-depends:     base       >= 4.0     && < 5,
-                     directory  >= 1.0.1   && < 1.1,
+                     directory  >= 1.0     && < 1.1,
                      process    >= 1.0.1   && < 1.1
   ghc-options:       -W
 
