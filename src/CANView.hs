@@ -3,6 +3,7 @@ module Main (main) where
 import Control.Monad
 import Data.Word
 import System.Environment
+import System.IO
 import Text.Printf
 
 import CAN
@@ -30,7 +31,9 @@ canview bus ids = do
   case m of
     Nothing -> canview bus ids
     Just (t, m@(Msg id _)) -> do
-      when (null ids || elem id ids) $ putStrLn $ printf "%10i   " t ++ show m
+      when (null ids || elem id ids) $ do
+        putStrLn $ printf "%10i   " t ++ show m
+	hFlush stdout
       canview bus ids
 
 help :: IO ()
