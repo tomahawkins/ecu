@@ -5,20 +5,38 @@ import Data.Char
 import Data.List
 import Data.Word
 import Text.Printf
+import System.Environment
 
 import CANData
 
 main :: IO ()
 main = do
-  dbc <- readFile "j1939.dbc"
-  let candb = mkCANDB dbc
-  writeCANDB candb
+  args <- getArgs
+  case args of
+    ["-h"] -> help
+    ["--help"] -> help
+    [ file ] -> do
+      dbc <- readFile file
+      let candb = mkCANDB dbc
+      writeCANDB candb
+    _ -> help
+
+help :: IO ()
+help = putStrLn $ unlines
+  [ ""
+  , "NAME"
+  , "  parsedbc - create CANDB.hs from dbc file"
+  , ""
+  , "SYNOPSIS"
+  , "  parsedbc FILE.dbc"
+  , ""
+  ]
 
 writeCANDB :: CANDB -> IO ()
 writeCANDB candb = writeFile "CANDB.hs" $ concat
   [ "{- Generated file. Do not modify -}\n"
   , "module CANDB\n"
-  , "  ( canDB (..)\n"
+  , "  ( canDB\n"
   , "  ) where\n"
   , "\n"
   , "import CANData\n"
@@ -199,26 +217,72 @@ showCANDB :: CANDB -> String
 showCANDB candb = concat
   [ "  { canDbName = " ++ show (canDbName candb) ++ "\n"
   , "  , canDbNodes =\n"
-  , "    [" ++ (drop 5 (concatMap showNode (canDbNodes candb)))
-  , "    ]\n"
+  , "      [" ++ (drop 7 (concatMap showNode (canDbNodes candb)))
+  , "      ]\n"
   , "  , canDbMsgs =\n"
-  , "    [" ++ (drop 5 (concatMap showMsg (canDbMsgs candb)))
-  , "    ]\n"
+  , "      [" ++ (drop 7 (concatMap showMsg (canDbMsgs candb)))
+  , "      ]\n"
   , "  }\n"
   ]
 
 showNode :: String -> String
-showNode x = "    , " ++ x ++ "\n"
+showNode x = "      , " ++ show x ++ "\n"
 
 showMsg :: CANMsg -> String
 showMsg msg = concat
-  [ "    , CANMsg\n"
-  , "        { canMsgId      = " ++ (printf "0x%08X" (canMsgId msg)) ++ "\n"
-  , "        , canMsgName    = " ++ show (canMsgName msg) ++ "\n"
-  , "        , canMsgDlc     = " ++ show (canMsgDlc msg) ++ "\n"
-  , "        , canMsgTxNode  = " ++ show (canMsgTxNode msg) ++ "\n"
-  , "        , canMsgAttrs   = [] {- XXX: map thru attributes -}\n"
-  , "        , canMsgSignals = [] {- XXX: map thru signals -}\n"
-  , "        }\n"
+  [ "      , CANMsg\n"
+  , "          { canMsgId      = " ++ (printf "0x%08X" (canMsgId msg)) ++ "\n"
+  , "          , canMsgName    = " ++ show (canMsgName msg) ++ "\n"
+  , "          , canMsgDlc     = " ++ show (canMsgDlc msg) ++ "\n"
+  , "          , canMsgTxNode  = " ++ show (canMsgTxNode msg) ++ "\n"
+  , "          , canMsgAttrs   =\n"
+  , "              [" ++ showMsgAttrs (canMsgAttrs msg)
+  , "              ]\n"
+  , "          , canMsgSignals =\n"
+  , "              [" ++ showMsgSignals (canMsgSignals msg) ++ "\n"
+  , "              ]\n"
+  , "          }\n"
   ]
+
+showMsgAttrs :: [CANMsgAttr] -> String
+showMsgAttrs attrs = case attrs of
+  [] -> ""
+  x  -> drop 15 (concatMap showMsgAttr x)
+
+showMsgAttr :: CANMsgAttr -> String
+showMsgAttr (a , b)  = "              , (" ++ show a ++ ", " ++ show b ++ ")\n"
+
+showMsgSignals :: [CANSignal] -> String
+showMsgSignals signals = case signals of
+  [] -> ""
+  x  -> drop 15 (concatMap showMsgSignal x)
+
+showMsgSignal :: CANSignal -> String
+showMsgSignal signal = concat
+  [ "              , CANSignal\n"
+  , "                  { canSignalName      = " ++ show (canSignalName      signal) ++ "\n"
+  , "                  , canSignalStartBit  = " ++ show (canSignalStartBit  signal) ++ "\n"
+  , "                  , canSignalBitLength = " ++ show (canSignalBitLength signal) ++ "\n"
+  , "                  , canSignalEndian    = " ++ show (canSignalEndian    signal) ++ "\n"
+  , "                  , canSignalSign      = " ++ show (canSignalSign      signal) ++ "\n"
+  , "                  , canSignalFactor    = " ++ show (canSignalFactor    signal) ++ "\n"
+  , "                  , canSignalOffset    = " ++ show (canSignalOffset    signal) ++ "\n"
+  , "                  , canSignalMin       = " ++ show (canSignalMin       signal) ++ "\n"
+  , "                  , canSignalMax       = " ++ show (canSignalMax       signal) ++ "\n"
+  , "                  , canSignalUnit      = " ++ show (canSignalUnit      signal) ++ "\n"
+  , "                  , canSignalRxNodes   =\n"
+  , "                      [" ++ showCANSignalRxNodes (canSignalRxNodes     signal)
+  , "                      ]\n"
+  , "                  , canSignalType      = " ++ show (canSignalType      signal) ++ "\n"
+  , "                  , canSignalMux       = " ++ show (canSignalMux       signal) ++ "\n"
+  , "                  }\n"
+  ]
+
+showCANSignalRxNodes :: [String] -> String
+showCANSignalRxNodes nodes = case nodes of
+  [] -> ""
+  x  -> drop 23 (concatMap showCANSignalRxNode x)
+
+showCANSignalRxNode :: String -> String
+showCANSignalRxNode x  = "                      , " ++ show x ++ "\n"
 

@@ -13,8 +13,6 @@ module CANData
   , CANSignalType (..)
   , CANSignalMux (..)
   , CANSignal (..)
-  , getSubId
-  , getDbcMsgs
   ) where
 
 import Data.Bits
@@ -89,10 +87,4 @@ data CANSignal = CANSignal
   , canSignalType      :: CANSignalType
   , canSignalMux       :: CANSignalMux
   } deriving (Read, Show, Eq, Ord)
-
-getSubId :: CANMsg -> String
-getSubId msg = printf "%04X" ((canMsgId msg) .&. 0xFFFF)
-  
-getDbcMsgs :: CANDB -> String -> [CANMsg]
-getDbcMsgs candb prefix = filter (\ x -> isPrefixOf prefix (canMsgName x)) (canDbMsgs candb) 
 
