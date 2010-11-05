@@ -4,6 +4,8 @@ tovcd    -  Converts several CAN formats to VCD.
 probe    -  Extracts configuration and probed signals from ECU.
 canview  -  View CAN traffic.
 cansend  -  Send CAN message.
+decomp   -  Decomposes J1939 messages from canview.
+parsedbc -  Parses *.dbc files.
 ccp      -  CAN Configuration Protocol master.
 toesb    -  Converts s-record ECU images to the Eaton Standard Binary format.
 git2cc   -  Bridge Git repositories to ClearCase.

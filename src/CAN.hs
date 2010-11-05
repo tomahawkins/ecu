@@ -20,7 +20,6 @@ module CAN
 import Data.Bits
 import Data.Char
 import Data.Word
-import Text.Printf
 
 import CANData
 

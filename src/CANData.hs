@@ -16,7 +16,6 @@ module CANData
   ) where
 
 import Data.Bits
-import Data.List
 import Data.Word
 import Text.Printf
 
