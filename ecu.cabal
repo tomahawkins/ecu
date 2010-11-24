@@ -1,5 +1,5 @@
 name:    ecu
-version: 0.0.7
+version: 0.0.8
 
 category: Embedded, Utils
 
@@ -24,6 +24,24 @@ cabal-version: >= 1.6
 
 extra-source-files:
     README
+    src/CANData.hs
+    src/CANDB.hs
+    src/CANDBParser.hs
+    src/CAN.hs
+    src/CANSend.hs
+    src/CANViewDecompose.hs
+    src/CANView.hs
+    src/CCP.hs
+    src/Commit.hs
+    src/Git2CC.hs
+    src/j1939_ASCII.dbc
+    src/J1939Data.hs
+    src/j1939_orig.dbc
+    src/j1939_utf8.dbc
+    src/kvaser.c
+    src/Probe.hs
+    src/ToESB.hs
+    src/ToVCD.hs
 
 executable tovcd
   hs-source-dirs:    src
