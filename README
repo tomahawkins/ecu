@@ -21,3 +21,9 @@ ecush               -  ECU development shell.
 http://hackage.haskell.org/package/ecu
 
 
+RELEASE NOTE:
+
+0.0.7    11/24/10
+
+- Improved probe config upload time, messages J1939 compliant.
+

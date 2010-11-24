@@ -45,6 +45,12 @@ help = putStrLn $ unlines
   , "  config <file>    Download probe configuration from ECU."
   , "  <file>           Given probe config file, pipe probes from ECU to VCD on stdin."
   , ""
+  , "CAN IDS"
+  , "  18ff00fa             Configuration upload request (sent by tool)."
+  , "  18ff01ef             Configuration header (length and checksum)."
+  , "  18ff02ef             Configuration data."
+  , "  18ff03ef - 18ff7fef  Probe data."
+  , ""
   ]
 
 data Type
@@ -107,38 +113,38 @@ width a = case a of
 
 
 saveConfig :: Bus -> FilePath -> IO ()
-saveConfig bus file = getConfig1 [] >>= writeFile file . format
+saveConfig bus file = sendRequest >>= writeFile file . format
   where
   format :: [Word8] -> String
   format bytes = [ chr $ fromIntegral a | a <- bytes, a /= 0 ]
 
-  -- Capture messages before header is received.
-  getConfig1 :: [Word8] -> IO [Word8]
-  getConfig1 buf1 = do
+  sendRequest :: IO [Word8]
+  sendRequest = do
+    t <- busTime' bus
+    sendMsg bus $ Msg 0x18ff00fa $ replicate 8 0
+    getConfigHeader t
+
+  getConfigHeader :: Int -> IO [Word8]
+  getConfigHeader t = do
     a <- recvMsg bus
     case a of 
-      Just (_, Msg 0x180000EF payload) -> getConfig0 (header payload) [] buf1
-      Just (_, Msg 0x180100EF payload) -> do
-        printf "received %3d of ??? probed configuration packets ...\n" (div (length buf1) 8 + 1)
-        getConfig1 (buf1 ++ payload)
-      _ -> getConfig1 buf1
+      Just (t, Msg 0x18ff01ef payload) -> getConfigData t (header payload) []
+      Just (t', _) | t' - t > 100 -> printf "timeout on config header, restarting ...\n" >> sendRequest
+      _ -> getConfigHeader t
 
-  -- Capture messages after header is received.
-  getConfig0 :: (Int, Word32) -> [Word8] -> [Word8] -> IO [Word8]
-  getConfig0 (n, crc) buf0 buf1
-    | n * 8 == length buf && crc32 buf == crc = return buf
-    | n * 8 == length buf = putStrLn "crc failed, restarting ..."                     >> getConfig1 []
-    | n * 8 <  length buf = putStrLn "received too many configuration packets, restarting ..." >> getConfig1 []
+  getConfigData :: Int -> (Int, Word32) -> [Word8] -> IO [Word8]
+  getConfigData t (n, crc) buf
+    | n * 8 == length buf && crc32 buf == crc = putStrLn "complete" >> return buf
+    | n * 8 == length buf = putStrLn "crc failed, restarting ..." >> sendRequest
+    | n * 8 <  length buf = putStrLn "received too many configuration packets, restarting ..." >> sendRequest
     | otherwise = do
     a <- recvMsg bus
     case a of 
-      Just (_, Msg 0x180000EF payload) -> putStrLn "missing configuration packets, restarting ..." >> getConfig0 (header payload) [] []
-      Just (_, Msg 0x180100EF payload) -> do
-        printf "received %3d of %3d probed configuration packets ...\n" (div (length (buf0 ++ buf1)) 8 + 1) n
-        getConfig0 (n, crc) (buf0 ++ payload) buf1
-      _ -> getConfig0 (n, crc) buf0 buf1
-    where
-    buf = buf0 ++ buf1
+      Just (t, Msg 0x18ff02ef payload) -> do
+        printf "received %3d of %3d probed configuration packets ...\n" (div (length buf) 8 + 1) n
+        getConfigData t (n, crc) (buf ++ payload)
+      Just (t', _) | t' - t > 100 -> putStrLn "timeout on config data, restarting ..." >> sendRequest
+      _ -> getConfigData t (n, crc) buf
 
 header :: [Word8] -> (Int, Word32)
 header payload' = (fromIntegral $ shiftR payload 32, fromIntegral payload)
@@ -164,15 +170,18 @@ startProbes bus file = do
   loop vcd sample lastTime = do
     m <- recvMsgWait bus 1000
     case m of
-      Just (time, Msg id payload) | id .&. 0xFFFF00FF == 0x180200EF -> do
+      Just (time, Msg id payload) | id .&. 0xffff00ff == 0x18ff00ef && id' >= 3 && id' <= 127 -> do
         --printf "%-20d %-20d\n" time (time - lastTime)
         --hFlush stdout
-        sample (fromIntegral $ shiftR id 8 .&. 0xFF) $ fromPayload payload
+        sample (id' - 3) $ fromPayload payload
         if time == lastTime
           then loop vcd sample lastTime
           else do
             step vcd $ time - lastTime
             loop vcd sample time
+	where
+        id' = fromIntegral $ shiftR id 8 .&. 0xFF
+
       _ -> loop vcd sample lastTime
 
 sampleProbes :: VCDHandle -> [[(String, Type)]] -> IO (Int -> Word64 -> IO ())
