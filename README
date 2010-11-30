@@ -21,7 +21,11 @@ ecush               -  ECU development shell.
 http://hackage.haskell.org/package/ecu
 
 
-RELEASE NOTE:
+RELEASE NOTES:
+
+0.0.9    ???
+
+- Windows support.
 
 0.0.8    11/24/10
 
