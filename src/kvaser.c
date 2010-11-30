@@ -67,7 +67,7 @@ void canWriteByte_(char byte, int i) { msg[i] = byte; }
 void canWrite_(int h, int id, int dlc) { canWrite(h, (long) id, msg, (unsigned int) dlc, canMSG_EXT); }
 
 int canReadTimer_(int handle) {
-#ifdef TARGET_MINGW
+#ifdef _WIN32
   return canReadTimer(handle);
 #else
   return canReadTimer(handle, &time);

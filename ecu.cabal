@@ -62,39 +62,59 @@ executable cansend
   hs-source-dirs:    src
   main-is:           CANSend.hs
   c-sources:         src/kvaser.c
-  extra-libraries:   canlib
   build-depends:     base       >= 4.0     && < 5
   ghc-options:       -W
   extensions:        ForeignFunctionInterface
+  if os(windows)
+    extra-libraries: canlib32
+    extra-lib-dirs:  C:\Kvaser\Canlib\Lib\MS
+    include-dirs:    C:\Kvaser\Canlib\INC
+  else
+    extra-libraries: canlib
 
 executable canview
   hs-source-dirs:    src
   main-is:           CANView.hs
   c-sources:         src/kvaser.c
-  extra-libraries:   canlib
   build-depends:     base       >= 4.0     && < 5
   ghc-options:       -W
   extensions:        ForeignFunctionInterface
+  if os(windows)
+    extra-libraries: canlib32
+    extra-lib-dirs:  C:\Kvaser\Canlib\Lib\MS
+    include-dirs:    C:\Kvaser\Canlib\INC
+  else
+    extra-libraries: canlib
 
 executable ccp
   hs-source-dirs:    src
   main-is:           CCP.hs
   c-sources:         src/kvaser.c
-  extra-libraries:   canlib
   build-depends:     base       >= 4.0     && < 5
   ghc-options:       -W
   extensions:        ForeignFunctionInterface, FlexibleInstances
+  if os(windows)
+    extra-libraries: canlib32
+    extra-lib-dirs:  C:\Kvaser\Canlib\Lib\MS
+    include-dirs:    C:\Kvaser\Canlib\INC
+  else
+    extra-libraries: canlib
 
 executable probe
   hs-source-dirs:    src
   main-is:           Probe.hs
   c-sources:         src/kvaser.c
-  extra-libraries:   canlib
   build-depends:     base       >= 4.0     && < 5,
                      digest     >= 0.0.0.8 && < 0.0.1,
                      vcd        >= 0.2.0   && < 0.3.0
   ghc-options:       -W
   extensions:        ForeignFunctionInterface
+  if os(windows)
+    extra-libraries: canlib32
+    extra-lib-dirs:  C:\Kvaser\Canlib\Lib\MS
+    include-dirs:    C:\Kvaser\Canlib\INC
+  else
+    extra-libraries:    canlib
 
 executable toesb
   hs-source-dirs:    src
