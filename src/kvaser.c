@@ -68,7 +68,8 @@ void canWrite_(int h, int id, int dlc) { canWrite(h, (long) id, msg, (unsigned i
 
 int canReadTimer_(int handle) {
 #ifdef _WIN32
-  return canReadTimer(handle);
+  time = canReadTimer(handle);
+  return 0;
 #else
   return canReadTimer(handle, &time);
 #endif
